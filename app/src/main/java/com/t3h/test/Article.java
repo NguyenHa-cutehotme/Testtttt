@@ -49,4 +49,14 @@ public class Article implements Serializable {
     public void setDecription(String decription) {
         this.decription = decription;
     }
+
+    @Override
+    public String toString() {
+        return "Article{" +
+                "title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                ", thumnail='" + thumnail + '\'' +
+                ", decription='" + decription + '\'' +
+                '}';
+    }
 }

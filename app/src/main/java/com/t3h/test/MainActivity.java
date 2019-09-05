@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,17 +17,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    public ArrayList<Article> articles;
 
     public static final String MY_URL = "https://www.voca.vn/blog/vocabulary/tu-vung-tieng-anh-theo-chu-de";
 
     private RecyclerView recycler;
     private ArticleAdapter articleAdapter;
+    private DownloadTask downloadTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recycler = (RecyclerView) findViewById(R.id.recyler_category);
         configRecyclerView();
+        downloadTask= new DownloadTask();
+
         new DownloadTask().execute(MY_URL);
     }
     private void configRecyclerView() {
@@ -36,13 +42,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Download HTML bằng AsynTask
-    private class DownloadTask extends AsyncTask<String, Void, ArrayList<Article>> {
+    private class DownloadTask extends AsyncTask<String, Void, ArrayList<Article>>  {
 
         private static final String TAG = "DownloadTask";
+        atiItemListener atiItemListener;
+
+        public void setAtiItemListener(MainActivity.atiItemListener atiItemListener) {
+            this.atiItemListener = atiItemListener;
+        }
 
         @Override
         protected ArrayList<Article> doInBackground(String... strings) {
             Document document = null;
+
+
             ArrayList<Article> listArticle = new ArrayList<>();
             try {
                 document = (Document) Jsoup.connect(strings[0]).get();
@@ -55,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                         Article article = new Article();
                         Element imgSubject = element.getElementsByTag("img").first();
                         Element titleSubject = element.getElementsByTag("p").first();
-//                        Element linkSubject = element.getElementsByTag("h3").first();
+                        Element linkSubject = element.getElementsByTag("a").first();
 //                        Element descrip = element.getElementsByTag("p").first();
                         //Parse to model
                         if (titleSubject != null) {
@@ -67,16 +80,17 @@ public class MainActivity extends AppCompatActivity {
 //                            Log.e(TAG, "doInBackground:2233 "+src );
                             article.setThumnail(src);
                         }
-//                        if (linkSubject != null) {
-//                            String link = linkSubject.attr("href");
-//                            article.setUrl(link);
-//                        }
+                        if (linkSubject != null) {
+                            String link = linkSubject.attr("href");
+                            article.setUrl(link);
+                        }
 //                        if (descrip != null) {
 //                            String des = descrip.text();
 //                            article.setDecription(des);
 //                        }
                         //Add to list
                         listArticle.add(article);
+                        Log.e(TAG, "doInBackground: "+listArticle.toString() );
                     }
                 }
 
@@ -92,7 +106,15 @@ public class MainActivity extends AppCompatActivity {
             //Setup data recyclerView
             articleAdapter = new ArticleAdapter(MainActivity.this,articles);
             recycler.setAdapter(articleAdapter);
+
         }
+
+
+    }
+    public interface atiItemListener {
+        void getData(ArrayList<Article> articles);
+
+
     }
 }
 
