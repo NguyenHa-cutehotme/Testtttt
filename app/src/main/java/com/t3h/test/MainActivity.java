@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String MY_URL = "https://guu.vn/cat/toc-dep";
+    public static final String MY_URL = "https://www.voca.vn/blog/vocabulary/tu-vung-tieng-anh-theo-chu-de";
 
     private RecyclerView recycler;
     private ArticleAdapter articleAdapter;
@@ -47,13 +48,15 @@ public class MainActivity extends AppCompatActivity {
                 document = (Document) Jsoup.connect(strings[0]).get();
                 if (document != null) {
                     //Lấy  html có thẻ như sau: div#latest-news > div.row > div.col-md-6 hoặc chỉ cần dùng  div.col-md-6
-                    Elements sub = document.select("div#latest-news > div.row > div.col-md-6");
+//                    Elements sub = document.select("div#latest-news > div.row > div.col-md-6");
+//                    Elements sub= document.select("div.to_box> div.to_box_left > a ");
+                    Elements sub= document.select("div.news-item");
                     for (Element element : sub) {
                         Article article = new Article();
-                        Element titleSubject = element.getElementsByTag("h3").first();
                         Element imgSubject = element.getElementsByTag("img").first();
-                        Element linkSubject = element.getElementsByTag("a").first();
-                        Element descrip = element.getElementsByTag("h4").first();
+                        Element titleSubject = element.getElementsByTag("p").first();
+//                        Element linkSubject = element.getElementsByTag("h3").first();
+//                        Element descrip = element.getElementsByTag("p").first();
                         //Parse to model
                         if (titleSubject != null) {
                             String title = titleSubject.text();
@@ -61,16 +64,17 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (imgSubject != null) {
                             String src = imgSubject.attr("src");
+//                            Log.e(TAG, "doInBackground:2233 "+src );
                             article.setThumnail(src);
                         }
-                        if (linkSubject != null) {
-                            String link = linkSubject.attr("href");
-                            article.setUrl(link);
-                        }
-                        if (descrip != null) {
-                            String des = descrip.text();
-                            article.setDecription(des);
-                        }
+//                        if (linkSubject != null) {
+//                            String link = linkSubject.attr("href");
+//                            article.setUrl(link);
+//                        }
+//                        if (descrip != null) {
+//                            String des = descrip.text();
+//                            article.setDecription(des);
+//                        }
                         //Add to list
                         listArticle.add(article);
                     }

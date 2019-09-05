@@ -55,8 +55,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleH
         private TextView tvTitle;
         public ArticleHolder(View itemView) {
             super(itemView);
-            imgThumnal = (ImageView) itemView.findViewById(R.id.img_thumbnail);
+            imgThumnal = (ImageView) itemView.findViewById(R.id.img_thumb);
             tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+
         }
     }
 }
